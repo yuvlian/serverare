@@ -1,0 +1,15 @@
+[package]
+name = "serverare"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+common.workspace = true
+firewalls.workspace = true
+pinger.workspace = true
+ureq.workspace = true
+serde.workspace = true
+serde_json.workspace = true
+parking_lot = "0.12"
+crossterm.workspace = true
+ratatui.workspace = true
