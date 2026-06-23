@@ -1,30 +1,28 @@
-use std::net::IpAddr;
-use std::time::Duration;
-
 use common::models::Server;
-use ping_rs::PingOptions;
-use ping_rs::send_ping;
+use ping::Ping;
+use std::time::Duration;
 
 const PING_TIMEOUT: Duration = Duration::from_millis(800);
 const PROBE_TIMEOUT: Duration = Duration::from_millis(2000);
 const PROBE_COUNT: usize = 4;
-const PING_DATA: [u8; 8] = [0u8; 8];
+const TTL: u32 = 64;
 
 pub fn ping_server(server: &mut Server) {
-    let options = PingOptions {
-        ttl: 64,
-        dont_fragment: false,
-    };
-
-    let mut best_relay_ip: Option<IpAddr> = None;
+    let mut best_relay_ip = None;
     let mut best_rtt = u32::MAX;
 
     for relay in &server.relays {
-        if let Ok(reply) = send_ping(&relay.ipv4, PING_TIMEOUT, &PING_DATA, Some(&options))
-            && reply.rtt < best_rtt
+        if let Ok(reply) = Ping::new(relay.ipv4)
+            .timeout(PING_TIMEOUT)
+            .ttl(TTL)
+            // .socket_type(ping::DGRAM)
+            .send()
         {
-            best_rtt = reply.rtt;
-            best_relay_ip = Some(relay.ipv4);
+            let rtt = reply.rtt.as_millis() as u32;
+            if rtt < best_rtt {
+                best_rtt = rtt;
+                best_relay_ip = Some(relay.ipv4);
+            }
         }
     }
 
@@ -33,9 +31,15 @@ pub fn ping_server(server: &mut Server) {
         let mut final_best_rtt = u32::MAX;
 
         for _ in 0..PROBE_COUNT {
-            if let Ok(reply) = send_ping(&ip, PROBE_TIMEOUT, &PING_DATA, Some(&options)) {
+            if let Ok(reply) = Ping::new(ip)
+                .timeout(PROBE_TIMEOUT)
+                .ttl(TTL)
+                // .socket_type(ping::DGRAM)
+                .send()
+            {
                 success_count += 1;
-                final_best_rtt = final_best_rtt.min(reply.rtt);
+                let rtt = reply.rtt.as_millis() as u32;
+                final_best_rtt = final_best_rtt.min(rtt);
             }
         }
 
@@ -45,13 +49,15 @@ pub fn ping_server(server: &mut Server) {
                 Some(((PROBE_COUNT - success_count as usize) * 100 / PROBE_COUNT) as u32);
             server.status_text = format!("{final_best_rtt}ms");
         } else {
-            server.ping = None;
-            server.packet_loss = Some(100);
-            server.status_text = "Offline".to_string();
+            handle_offline(server);
         }
     } else {
-        server.ping = None;
-        server.packet_loss = None;
-        server.status_text = "Offline".to_string();
+        handle_offline(server);
     }
+}
+
+fn handle_offline(server: &mut Server) {
+    server.ping = None;
+    server.packet_loss = Some(100);
+    server.status_text = "Offline".to_string();
 }

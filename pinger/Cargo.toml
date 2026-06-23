@@ -5,4 +5,4 @@ edition = "2024"
 
 [dependencies]
 common.workspace = true
-ping-rs.workspace = true
+ping.workspace = true
