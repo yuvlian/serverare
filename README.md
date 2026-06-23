@@ -1,8 +1,8 @@
 # serverare
 
-serverare (server + netorare)
+### serverare (server + netorare)
 
-a tool that can block steam datagram relays so you get to choose the server to queue for in CS2 and a few other games.
+a TUI app less than 3 MB that can block steam datagram relays so you get to choose the server to queue for in CS2 and a few other games.
 
 it supports Linux and Windows. 
 
@@ -28,6 +28,12 @@ it supports Linux and Windows.
    # linux
    sudo ./target/release/serverare
    ```
+
+you can also:
+   - `cargo install --git https://github.com/yuvlian/serverare --bin serverare`
+   - or `cargo install --path serverare` after cloning & cd
+   
+   to automatically add the compiled binary to your `.cargo` directory which is usually in PATH env var
 
 ### note:
    I have tested it on linux mint and windows 11
@@ -88,7 +94,11 @@ you can see all deps used in workspace Cargo.toml
 
 4. **reference?**
    
-   i used this project as a reference: https://github.com/FN-FAL113/server-picker-x. i made this project because i didnt like how bloated it was. i also struggle with reading C# codebases so yeah, forking isnt an option for me.
+   i used this project as a reference: https://github.com/FN-FAL113/server-picker-x.
+   
+   i made this project because i didnt like how bloated it was for my own use.
+   
+   i also struggle with reading C# codebases so yeah, forking isnt an option for me.
 
 5. **wow, do u have another tool that u made more lightweight?**
 
