@@ -2,9 +2,8 @@ use std::collections::HashMap;
 use std::net::IpAddr;
 
 use serde::Deserialize;
-use serde::Serialize;
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Deserialize)]
 pub struct GameDefinition {
     #[serde(rename = "gameMode")]
     pub game_mode: String,
@@ -20,19 +19,19 @@ pub struct GameDefinition {
     pub cluster_keywords: Vec<String>,
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Deserialize)]
 pub struct SdrConfig {
     // pub revision: serde_json::Value,
     pub pops: HashMap<String, PopDefinition>,
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Deserialize)]
 pub struct PopDefinition {
     pub desc: String,
     pub relays: Option<Vec<Relay>>,
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Copy, Deserialize)]
 pub struct Relay {
     pub ipv4: IpAddr,
 }

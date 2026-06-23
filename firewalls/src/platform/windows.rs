@@ -95,7 +95,7 @@ impl FirewallManager for WindowsFirewallManager {
     }
 
     fn block_servers(&self, servers: &[(String, Vec<Relay>, String)]) -> Result<(), FirewallError> {
-        let mut db_updates = Vec::new();
+        let mut db_updates = Vec::with_capacity(servers.len());
         for (name, ips, description) in servers {
             let rule_name = get_rule_name(name);
             let _ = self.unblock_server(name);

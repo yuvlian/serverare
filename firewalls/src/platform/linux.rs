@@ -66,7 +66,7 @@ impl FirewallManager for LinuxFirewallManager {
     }
 
     fn block_servers(&self, servers: &[(String, Vec<Relay>, String)]) -> Result<(), FirewallError> {
-        let mut db_updates = Vec::new();
+        let mut db_updates = Vec::with_capacity(servers.len());
         for (name, ips, _description) in servers {
             let mut ip_list = String::with_capacity(ips.len() * 16);
             for (i, ip) in ips.iter().enumerate() {

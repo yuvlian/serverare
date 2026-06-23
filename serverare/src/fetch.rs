@@ -130,13 +130,13 @@ pub fn fetch_servers(definition: &GameDefinition) -> Result<Vec<Server>, FetchEr
     let config: SdrConfig = response.body_mut().read_json()?;
 
     let mut servers = Vec::with_capacity(config.pops.len());
-    let mut clusters: HashMap<String, Vec<Relay>> = HashMap::new();
+    let mut clusters: HashMap<String, Vec<Relay>> = HashMap::with_capacity(config.pops.len());
 
-    for (pop_id, pop_def) in &config.pops {
-        let desc = &pop_def.desc;
+    for (pop_id, pop_def) in config.pops {
+        let desc = pop_def.desc;
 
-        let relays = match &pop_def.relays {
-            Some(relay_defs) => relay_defs.clone(),
+        let relays = match pop_def.relays {
+            Some(relay_defs) => relay_defs,
             None => continue,
         };
 
@@ -156,8 +156,8 @@ pub fn fetch_servers(definition: &GameDefinition) -> Result<Vec<Server>, FetchEr
                 .extend(relays);
         } else {
             let s = Server {
-                id: pop_id.clone(),
-                description: desc.clone(),
+                id: pop_id,
+                description: desc,
                 relays,
                 ping: None,
                 status_text: String::new(),
